@@ -111,7 +111,7 @@ typedef struct
 
 void main_menu(GameData *game);
 
-// 函数声明
+// 函数
 void init_game(GameData *game);
 void init_player(Player *player);
 void init_world(GameData *game);
@@ -132,7 +132,7 @@ void learn_skills(GameData *game);
 int estimate_enemy_level(Enemy *enemy);
 void cheat_game(GameData *game);
 
-// 游戏结局
+// 结局
 void show_ending(GameData *game)
 {
     printf("\n=====================================\n");
@@ -145,7 +145,6 @@ void show_ending(GameData *game)
     printf("=====================================\n");
 }
 
-// 主函数
 int main()
 {
     SetConsoleOutputCP(65001);
@@ -1025,7 +1024,7 @@ void main_menu(GameData *game)
     }
 }
 
-// 显示状态
+
 void show_status(GameData *game)
 {
     printf("\n========== 角色状态 ==========\n");
@@ -1074,7 +1073,7 @@ void travel(GameData *game)
     }
 }
 
-// 战斗系统
+// 战斗
 void battle(GameData *game)
 {
     // 如果恶龙已被击败
@@ -1327,7 +1326,7 @@ void battle(GameData *game)
             {
                 int enemy_level = estimate_enemy_level(&enemy);
 
-                // 根据玩家等级与敌人等级差计算逃跑成功率
+                // 根据玩家等级与敌人等级差计算逃跑率
                 int escape_chance = 50 + (game->player.level - enemy_level) * 5;
 
                 escape_chance += (game->player.agility / 10) * 5;
@@ -1774,7 +1773,7 @@ void use_item(GameData *game)
         {
         case 0: // 武器
             printf("你装备了%s，增加了%d点攻击力！\n", item->name, item->value);
-            // 从背包中移除物品
+            // 移除物品
             for (int i = choice; i < game->inventory_count - 1; i++)
             {
                 game->inventory[i] = game->inventory[i + 1];
@@ -1783,7 +1782,7 @@ void use_item(GameData *game)
             break;
         case 1: // 防具
             printf("你装备了%s，增加了%d点防御力！\n", item->name, item->value);
-            // 从背包中移除物品
+
             for (int i = choice; i < game->inventory_count - 1; i++)
             {
                 game->inventory[i] = game->inventory[i + 1];
@@ -1822,7 +1821,7 @@ void use_item(GameData *game)
                 printf("你使用了%s，恢复了%d点生命值！\n", item->name, item->value);
             }
 
-            // 从背包中移除已使用的消耗品
+            // 移除已使用的消耗品
             for (int i = choice; i < game->inventory_count - 1; i++)
             {
                 game->inventory[i] = game->inventory[i + 1];
@@ -1870,11 +1869,11 @@ void learn_skills(GameData *game)
     int available_skills = 0;
     int available_skill_indices[MAX_SKILLS];
 
-    // 只检查实际存在的技能（最多MAX_SKILLS个）
-    for (int i = 0; i < MAX_SKILLS && i < 19; i++) // 限制在实际定义的技能范围内
+
+    for (int i = 0; i < MAX_SKILLS && i < 19; i++) // 限制在实际定义的范围内
     {
         int learned = 0;
-        // 检查技能是否已学会
+        // 检查是否已学会
         for (int j = 0; j < game->learned_skill_count; j++)
         {
             if (game->learned_skills[j] == i)
@@ -1884,7 +1883,7 @@ void learn_skills(GameData *game)
             }
         }
 
-        // 检查玩家等级是否满足技能要求
+        // 检查玩家等级是否满足要求
         if (!learned && game->player.level >= game->skills[i].required_level)
         {
             printf("%d. %s (需要等级: %d)",
@@ -2005,3 +2004,4 @@ void cheat_game(GameData *game)
 
     return;
 }
+
