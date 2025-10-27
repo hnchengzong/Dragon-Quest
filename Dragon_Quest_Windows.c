@@ -111,7 +111,7 @@ typedef struct
 
 void main_menu(GameData *game);
 
-// 函数
+
 void init_game(GameData *game);
 void init_player(Player *player);
 void init_world(GameData *game);
@@ -186,7 +186,7 @@ int main()
     return 0;
 }
 
-// 初始化
+
 void init_game(GameData *game)
 {
     init_player(&game->player);
@@ -1211,7 +1211,7 @@ void battle(GameData *game)
                 int skill_index = game->learned_skills[i];
                 Skill *skill = &game->skills[skill_index];
 
-                // 检查玩家等级是否满足技能要求
+                // 检查玩家等级是否满足要求
                 if (game->player.level >= skill->required_level)
                 {
                     if (game->player.mp >= skill->mp_cost)
@@ -2004,4 +2004,5 @@ void cheat_game(GameData *game)
 
     return;
 }
+
 
