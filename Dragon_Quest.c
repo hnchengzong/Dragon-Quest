@@ -110,7 +110,7 @@ typedef struct
 
 void main_menu(GameData *game);
 
-// 函数声明
+
 void init_game(GameData *game);
 void init_player(Player *player);
 void init_world(GameData *game);
@@ -131,7 +131,7 @@ void learn_skills(GameData *game);
 int estimate_enemy_level(Enemy *enemy);
 void cheat_game(GameData *game);
 
-// 游戏结局
+// 结局
 void show_ending(GameData *game)
 {
     printf("\n=====================================\n");
@@ -184,7 +184,7 @@ int main()
     return 0;
 }
 
-// 初始化
+
 void init_game(GameData *game)
 {
     init_player(&game->player);
@@ -942,10 +942,10 @@ void init_world(GameData *game)
     game->dragon_defeated = 0; // 恶龙未被击败
 }
 
-// 估算敌人等级的函数
+// 估算敌人等级
 int estimate_enemy_level(Enemy *enemy)
 {
-    // 基于敌人的属性估算等级
+    // 基于敌人的属性估算
     int level_by_hp = enemy->hp / 30;
     int level_by_attack = enemy->attack / 5;
 
@@ -1071,10 +1071,10 @@ void travel(GameData *game)
     }
 }
 
-// 战斗系统
+// 战斗
 void battle(GameData *game)
 {
-    // 如果恶龙已被击败
+    // 如果恶龙被击败
     if (game->dragon_defeated && game->current_location == 3)
     {
         printf("恶龙已经被你击败了，龙之城堡现在是一片废墟。\n");
@@ -1556,7 +1556,7 @@ void talk_to_npc(GameData *game)
     {
         int npc_index = npc_indices[choice];
 
-        // 根据恶龙是否被击败显示不同的对话
+        // 根据恶龙是否被击败显示不同对话
         if (game->dragon_defeated &&
             (npc_index == 1 || npc_index == 5 || npc_index == 16 || npc_index == 19))
         {
@@ -1879,7 +1879,7 @@ void learn_skills(GameData *game)
             }
         }
 
-        // 检查玩家等级是否满足要求
+        // 检查等级是否满足要求
         if (!learned && game->player.level >= game->skills[i].required_level)
         {
             printf("%d. %s (需要等级: %d)",
@@ -1999,4 +1999,5 @@ void cheat_game(GameData *game)
 
     return;
 }
+
 
