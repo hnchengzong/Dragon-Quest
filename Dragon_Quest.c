@@ -1,8 +1,10 @@
-//由于git一直连接不上github所以只能手动提交c文件了。
+//由于git连接不上只能手动提交了。
+//数值设计可能存在许多问题，请自行调整。
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 
 #define MAX_NAME_LENGTH 60
 #define MAX_INVENTORY 30
@@ -67,16 +69,16 @@ typedef struct
 } Enemy;
 
 // 任务
-typedef struct
-{
-    int id;
-    char name[MAX_NAME_LENGTH];
-    char description[200];
-    int completed;  // 是否完成 (0=未完成, 1=完成)
-    int reward_exp; // 奖励
-    int reward_gold;
-    int reward_item;
-} Quest;
+// typedef struct
+// {
+//     int id;
+//     char name[MAX_NAME_LENGTH];
+//     char description[200];
+//     int completed;  // 是否完成 (0=未完成, 1=完成)
+//     int reward_exp; // 奖励
+//     int reward_gold;
+//     int reward_item;
+// } Quest;
 
 // NPC
 typedef struct
@@ -101,7 +103,7 @@ typedef struct
     Enemy enemies[MAX_ENEMIES];
     Npc npcs[MAX_NPCS];
     Item items[MAX_INVENTORY];
-    Quest quests[10];
+//    Quest quests[10];
     int dragon_defeated; // 恶龙是否被击败
     int current_location;
     int inventory_count;
@@ -185,6 +187,7 @@ int main()
     return 0;
 }
 
+// 初始化
 void init_game(GameData *game)
 {
     init_player(&game->player);
@@ -1022,7 +1025,6 @@ void main_menu(GameData *game)
     }
 }
 
-// 状态
 void show_status(GameData *game)
 {
     printf("\n========== 角色状态 ==========\n");
@@ -1249,7 +1251,7 @@ void battle(GameData *game)
                     game->player.mp -= skill->mp_cost;
 
                     int base_damage = skill->damage + game->player.attack;  // 技能伤害+玩家攻击力
-                    int intelligence_bonus = game->player.intelligence / 2; // 每2点智力增加1点技能伤害
+                    int intelligence_bonus = game->player.intelligence / 2; // 智力每2点增加1点技能伤害
                     damage = base_damage + intelligence_bonus;
 
                     enemy.hp -= damage;
@@ -1324,7 +1326,7 @@ void battle(GameData *game)
             {
                 int enemy_level = estimate_enemy_level(&enemy);
 
-                // 根据玩家等级与敌人等级差计算逃跑成功率
+                // 根据玩家等级与敌人等级差计算逃跑率
                 int escape_chance = 50 + (game->player.level - enemy_level) * 5;
 
                 escape_chance += (game->player.agility / 10) * 5;
@@ -1556,7 +1558,7 @@ void talk_to_npc(GameData *game)
     {
         int npc_index = npc_indices[choice];
 
-        // 根据恶龙是否被击败显示不同的对话
+        // 根据恶龙是否被击败显示不同对话
         if (game->dragon_defeated &&
             (npc_index == 1 || npc_index == 5 || npc_index == 16 || npc_index == 19))
         {
@@ -1771,7 +1773,7 @@ void use_item(GameData *game)
         {
         case 0: // 武器
             printf("你装备了%s，增加了%d点攻击力！\n", item->name, item->value);
-            // 从背包中移除
+            // 移除物品
             for (int i = choice; i < game->inventory_count - 1; i++)
             {
                 game->inventory[i] = game->inventory[i + 1];
@@ -1780,7 +1782,7 @@ void use_item(GameData *game)
             break;
         case 1: // 防具
             printf("你装备了%s，增加了%d点防御力！\n", item->name, item->value);
-            // 从背包中移除
+
             for (int i = choice; i < game->inventory_count - 1; i++)
             {
                 game->inventory[i] = game->inventory[i + 1];
@@ -1867,11 +1869,10 @@ void learn_skills(GameData *game)
     int available_skills = 0;
     int available_skill_indices[MAX_SKILLS];
 
-    // 只检查实际存在的
-    for (int i = 0; i < MAX_SKILLS && i < 19; i++)
+    for (int i = 0; i < MAX_SKILLS && i < 19; i++) // 限制在实际定义的范围内
     {
         int learned = 0;
-        // 检查技能是否已学会
+        // 检查是否已学会
         for (int j = 0; j < game->learned_skill_count; j++)
         {
             if (game->learned_skills[j] == i)
@@ -1881,7 +1882,7 @@ void learn_skills(GameData *game)
             }
         }
 
-        // 检查玩家等级是否满足技能要求
+        // 检查玩家等级是否满足要求
         if (!learned && game->player.level >= game->skills[i].required_level)
         {
             printf("%d. %s (需要等级: %d)",
@@ -1917,6 +1918,7 @@ void learn_skills(GameData *game)
     if (choice == 0)
         return;
 
+    // 选择是否有效
     if (choice > 0 && choice <= available_skills)
     {
         int skill_index = available_skill_indices[choice - 1];
@@ -2001,4 +2003,3 @@ void cheat_game(GameData *game)
 
     return;
 }
-
