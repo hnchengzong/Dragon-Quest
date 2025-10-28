@@ -1,10 +1,11 @@
 //由于git连接不上只能手动提交了。
 //数值设计可能存在许多问题，请自行调整。
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
 
 #define MAX_NAME_LENGTH 60
 #define MAX_INVENTORY 30
@@ -26,8 +27,8 @@ typedef struct
     long gold;
     long attack;
     long defense;
-    long agility;      // 敏捷，影响闪避
-    long intelligence; // 智力，影响魔法攻击
+    long agility;      // 敏捷，影响闪避和先攻
+    long intelligence; // 智力，影响魔法攻击和魔法值
 } Player;
 
 typedef struct
@@ -69,16 +70,16 @@ typedef struct
 } Enemy;
 
 // 任务
-// typedef struct
-// {
-//     int id;
-//     char name[MAX_NAME_LENGTH];
-//     char description[200];
-//     int completed;  // 是否完成 (0=未完成, 1=完成)
-//     int reward_exp; // 奖励
-//     int reward_gold;
-//     int reward_item;
-// } Quest;
+typedef struct
+{
+    int id;
+    char name[MAX_NAME_LENGTH];
+    char description[200];
+    int completed;  // 是否完成 (0=未完成, 1=完成)
+    int reward_exp; // 奖励
+    int reward_gold;
+    int reward_item;
+} Quest;
 
 // NPC
 typedef struct
@@ -103,7 +104,7 @@ typedef struct
     Enemy enemies[MAX_ENEMIES];
     Npc npcs[MAX_NPCS];
     Item items[MAX_INVENTORY];
-//    Quest quests[10];
+    Quest quests[10];
     int dragon_defeated; // 恶龙是否被击败
     int current_location;
     int inventory_count;
@@ -113,7 +114,7 @@ typedef struct
 
 void main_menu(GameData *game);
 
-// 函数
+// 函数声明
 void init_game(GameData *game);
 void init_player(Player *player);
 void init_world(GameData *game);
@@ -134,7 +135,7 @@ void learn_skills(GameData *game);
 int estimate_enemy_level(Enemy *enemy);
 void cheat_game(GameData *game);
 
-// 结局
+// 游戏结局
 void show_ending(GameData *game)
 {
     printf("\n=====================================\n");
@@ -322,8 +323,8 @@ void init_world(GameData *game)
 
     strcpy(game->items[4].name, "锁子甲");
     game->items[4].type = 1;
-    game->items[4].value = 100;
-    game->items[4].price = 1000;
+    game->items[4].value = 800;
+    game->items[4].price = 2000;
 
     strcpy(game->items[5].name, "高级生命药水");
     game->items[5].type = 2;
@@ -337,8 +338,8 @@ void init_world(GameData *game)
 
     strcpy(game->items[7].name, "双手剑");
     game->items[7].type = 0;
-    game->items[7].value = 78;
-    game->items[7].price = 800;
+    game->items[7].value = 4567;
+    game->items[7].price = 8000;
 
     strcpy(game->items[8].name, "板甲");
     game->items[8].type = 1;
@@ -347,18 +348,18 @@ void init_world(GameData *game)
 
     strcpy(game->items[9].name, "超级生命药水");
     game->items[9].type = 2;
-    game->items[9].value = 8000;
+    game->items[9].value = 16000;
     game->items[9].price = 1000;
 
     strcpy(game->items[10].name, "传说之剑");
     game->items[10].type = 0;
-    game->items[10].value = 1000;
-    game->items[10].price = 8000;
+    game->items[10].value = 8000;
+    game->items[10].price = 24000;
 
     strcpy(game->items[11].name, "龙鳞甲");
     game->items[11].type = 1;
-    game->items[11].value = 1000;
-    game->items[11].price = 8000;
+    game->items[11].value = 4000;
+    game->items[11].price = 24000;
 
     strcpy(game->items[12].name, "短剑");
     game->items[12].type = 0;
@@ -377,13 +378,13 @@ void init_world(GameData *game)
 
     strcpy(game->items[15].name, "精灵弓");
     game->items[15].type = 0;
-    game->items[15].value = 100;
-    game->items[15].price = 1000;
+    game->items[15].value = 180;
+    game->items[15].price = 1800;
 
     strcpy(game->items[16].name, "法杖");
     game->items[16].type = 0;
-    game->items[16].value = 120;
-    game->items[16].price = 1200;
+    game->items[16].value = 320;
+    game->items[16].price = 2800;
 
     strcpy(game->items[17].name, "布衣");
     game->items[17].type = 1;
@@ -397,18 +398,18 @@ void init_world(GameData *game)
 
     strcpy(game->items[19].name, "链甲");
     game->items[19].type = 1;
-    game->items[19].value = 40;
-    game->items[19].price = 500;
+    game->items[19].value = 120;
+    game->items[19].price = 800;
 
     strcpy(game->items[20].name, "骑士铠甲");
     game->items[20].type = 1;
-    game->items[20].value = 60;
-    game->items[20].price = 800;
+    game->items[20].value = 600;
+    game->items[20].price = 2400;
 
     strcpy(game->items[21].name, "法师之袍");
     game->items[21].type = 1;
-    game->items[21].value = 85;
-    game->items[21].price = 1000;
+    game->items[21].value = 879;
+    game->items[21].price = 3000;
 
     strcpy(game->items[23].name, "中级生命药水");
     game->items[23].type = 2;
@@ -572,59 +573,59 @@ void init_world(GameData *game)
     game->enemies[1].gold_reward = 15;
 
     strcpy(game->enemies[2].name, "骷髅战士");
-    game->enemies[2].hp = 80;
-    game->enemies[2].max_hp = 80;
-    game->enemies[2].attack = 25;
-    game->enemies[2].defense = 8;
-    game->enemies[2].exp_reward = 50;
+    game->enemies[2].hp = 800;
+    game->enemies[2].max_hp = 800;
+    game->enemies[2].attack = 250;
+    game->enemies[2].defense = 80;
+    game->enemies[2].exp_reward = 500;
     game->enemies[2].gold_reward = 40;
 
     strcpy(game->enemies[3].name, "恶龙");
-    game->enemies[3].hp = 32000;
-    game->enemies[3].max_hp = 32000;
-    game->enemies[3].attack = 800;
-    game->enemies[3].defense = 160;
-    game->enemies[3].exp_reward = 5000;
-    game->enemies[3].gold_reward = 5000;
+    game->enemies[3].hp = 120000;
+    game->enemies[3].max_hp = 120000;
+    game->enemies[3].attack = 16000;
+    game->enemies[3].defense = 1800;
+    game->enemies[3].exp_reward = 50000;
+    game->enemies[3].gold_reward = 50000;
 
     strcpy(game->enemies[4].name, "沙漠蝎子");
-    game->enemies[4].hp = 140;
-    game->enemies[4].max_hp = 140;
-    game->enemies[4].attack = 40;
-    game->enemies[4].defense = 25;
-    game->enemies[4].exp_reward = 70;
+    game->enemies[4].hp = 440;
+    game->enemies[4].max_hp = 440;
+    game->enemies[4].attack = 80;
+    game->enemies[4].defense = 45;
+    game->enemies[4].exp_reward = 100;
     game->enemies[4].gold_reward = 40;
 
     strcpy(game->enemies[5].name, "雪怪");
-    game->enemies[5].hp = 800;
-    game->enemies[5].max_hp = 800;
-    game->enemies[5].attack = 60;
-    game->enemies[5].defense = 48;
-    game->enemies[5].exp_reward = 90;
+    game->enemies[5].hp = 1200;
+    game->enemies[5].max_hp = 1200;
+    game->enemies[5].attack = 90;
+    game->enemies[5].defense = 68;
+    game->enemies[5].exp_reward = 590;
     game->enemies[5].gold_reward = 40;
 
     strcpy(game->enemies[6].name, "海盗");
-    game->enemies[6].hp = 680;
-    game->enemies[6].max_hp = 680;
-    game->enemies[6].attack = 112;
+    game->enemies[6].hp = 980;
+    game->enemies[6].max_hp = 980;
+    game->enemies[6].attack = 192;
     game->enemies[6].defense = 29;
-    game->enemies[6].exp_reward = 120;
+    game->enemies[6].exp_reward = 620;
     game->enemies[6].gold_reward = 80;
 
     strcpy(game->enemies[7].name, "精灵法师");
-    game->enemies[7].hp = 460;
-    game->enemies[7].max_hp = 460;
-    game->enemies[7].attack = 90;
+    game->enemies[7].hp = 2600;
+    game->enemies[7].max_hp = 2600;
+    game->enemies[7].attack = 4600;
     game->enemies[7].defense = 15;
-    game->enemies[7].exp_reward = 100;
+    game->enemies[7].exp_reward = 1000;
     game->enemies[7].gold_reward = 90;
 
     strcpy(game->enemies[8].name, "石像鬼");
     game->enemies[8].hp = 990;
     game->enemies[8].max_hp = 990;
-    game->enemies[8].attack = 32;
-    game->enemies[8].defense = 95;
-    game->enemies[8].exp_reward = 120;
+    game->enemies[8].attack = 99;
+    game->enemies[8].defense = 99;
+    game->enemies[8].exp_reward = 860;
     game->enemies[8].gold_reward = 100;
 
     strcpy(game->enemies[9].name, "恶魔");
@@ -652,51 +653,51 @@ void init_world(GameData *game)
     game->enemies[11].gold_reward = 20;
 
     strcpy(game->enemies[12].name, "幽灵");
-    game->enemies[12].hp = 200;
-    game->enemies[12].max_hp = 200;
+    game->enemies[12].hp = 600;
+    game->enemies[12].max_hp = 600;
     game->enemies[12].attack = 50;
-    game->enemies[12].defense = 30;
+    game->enemies[12].defense = 80;
     game->enemies[12].exp_reward = 180;
     game->enemies[12].gold_reward = 160;
 
     strcpy(game->enemies[13].name, "石头人");
-    game->enemies[13].hp = 1000;
-    game->enemies[13].max_hp = 1000;
+    game->enemies[13].hp = 8000;
+    game->enemies[13].max_hp = 8000;
     game->enemies[13].attack = 20;
-    game->enemies[13].defense = 150;
-    game->enemies[13].exp_reward = 460;
+    game->enemies[13].defense = 850;
+    game->enemies[13].exp_reward = 860;
     game->enemies[13].gold_reward = 150;
 
     strcpy(game->enemies[14].name, "黑暗法师");
-    game->enemies[14].hp = 250;
-    game->enemies[14].max_hp = 250;
-    game->enemies[14].attack = 480;
+    game->enemies[14].hp = 850;
+    game->enemies[14].max_hp = 850;
+    game->enemies[14].attack = 1280;
     game->enemies[14].defense = 25;
     game->enemies[14].exp_reward = 450;
     game->enemies[14].gold_reward = 230;
 
     strcpy(game->enemies[15].name, "地狱犬");
-    game->enemies[15].hp = 400;
-    game->enemies[15].max_hp = 400;
+    game->enemies[15].hp = 800;
+    game->enemies[15].max_hp = 800;
     game->enemies[15].attack = 85;
     game->enemies[15].defense = 48;
     game->enemies[15].exp_reward = 480;
     game->enemies[15].gold_reward = 160;
 
     strcpy(game->enemies[16].name, "木乃伊");
-    game->enemies[16].hp = 100;
-    game->enemies[16].max_hp = 100;
-    game->enemies[16].attack = 35;
-    game->enemies[16].defense = 35;
+    game->enemies[16].hp = 120;
+    game->enemies[16].max_hp = 120;
+    game->enemies[16].attack = 25;
+    game->enemies[16].defense = 20;
     game->enemies[16].exp_reward = 120;
     game->enemies[16].gold_reward = 40;
 
     strcpy(game->enemies[17].name, "冰霜巨龙");
-    game->enemies[17].hp = 1200;
-    game->enemies[17].max_hp = 1200;
-    game->enemies[17].attack = 120;
-    game->enemies[17].defense = 70;
-    game->enemies[17].exp_reward = 1000;
+    game->enemies[17].hp = 7200;
+    game->enemies[17].max_hp = 7200;
+    game->enemies[17].attack = 620;
+    game->enemies[17].defense = 660;
+    game->enemies[17].exp_reward = 4100;
     game->enemies[17].gold_reward = 750;
 
     strcpy(game->enemies[18].name, "刺客");
@@ -708,9 +709,9 @@ void init_world(GameData *game)
     game->enemies[18].gold_reward = 780;
 
     strcpy(game->enemies[19].name, "熔岩元素");
-    game->enemies[19].hp = 350;
-    game->enemies[19].max_hp = 350;
-    game->enemies[19].attack = 75;
+    game->enemies[19].hp = 660;
+    game->enemies[19].max_hp = 660;
+    game->enemies[19].attack = 95;
     game->enemies[19].defense = 50;
     game->enemies[19].exp_reward = 320;
     game->enemies[19].gold_reward = 300;
@@ -724,36 +725,36 @@ void init_world(GameData *game)
     game->enemies[20].gold_reward = 900;
 
     strcpy(game->enemies[21].name, "堕天使");
-    game->enemies[21].hp = 1500;
-    game->enemies[21].max_hp = 1500;
-    game->enemies[21].attack = 200;
+    game->enemies[21].hp = 15000;
+    game->enemies[21].max_hp = 15000;
+    game->enemies[21].attack = 2000;
     game->enemies[21].defense = 100;
-    game->enemies[21].exp_reward = 1500;
+    game->enemies[21].exp_reward = 8500;
     game->enemies[21].gold_reward = 1400;
 
     strcpy(game->enemies[22].name, "混沌体");
-    game->enemies[22].hp = 3800;
-    game->enemies[22].max_hp = 3800;
-    game->enemies[22].attack = 300;
+    game->enemies[22].hp = 38000;
+    game->enemies[22].max_hp = 38000;
+    game->enemies[22].attack = 5000;
     game->enemies[22].defense = 300;
-    game->enemies[22].exp_reward = 4800;
+    game->enemies[22].exp_reward = 8800;
     game->enemies[22].gold_reward = 0;
 
     strcpy(game->enemies[23].name, "虚空行者");
-    game->enemies[23].hp = 1200;
-    game->enemies[23].max_hp = 1200;
-    game->enemies[23].attack = 150;
-    game->enemies[23].defense = 300;
-    game->enemies[23].exp_reward = 1200;
+    game->enemies[23].hp = 12000;
+    game->enemies[23].max_hp = 12000;
+    game->enemies[23].attack = 8800;
+    game->enemies[23].defense = 8000;
+    game->enemies[23].exp_reward = 9600;
     game->enemies[23].gold_reward = 600;
 
     strcpy(game->enemies[24].name, "奥赛罗");
-    game->enemies[24].hp = 2400;
-    game->enemies[24].max_hp = 2400;
-    game->enemies[24].attack = 360;
-    game->enemies[24].defense = 100;
-    game->enemies[24].exp_reward = 2000;
-    game->enemies[24].gold_reward = 900;
+    game->enemies[24].hp = 67600;
+    game->enemies[24].max_hp = 67600;
+    game->enemies[24].attack = 8800;
+    game->enemies[24].defense = 6000;
+    game->enemies[24].exp_reward = 20000;
+    game->enemies[24].gold_reward = 3000;
 
     // NPC
     strcpy(game->npcs[0].name, "武器商人");
@@ -945,10 +946,10 @@ void init_world(GameData *game)
     game->dragon_defeated = 0; // 恶龙未被击败
 }
 
-// 估算敌人等级
+// 估算敌人等级的函数
 int estimate_enemy_level(Enemy *enemy)
 {
-    // 基于敌人的属性估算
+    // 基于敌人的属性估算等级
     int level_by_hp = enemy->hp / 30;
     int level_by_attack = enemy->attack / 5;
 
@@ -1025,6 +1026,7 @@ void main_menu(GameData *game)
     }
 }
 
+// 状态
 void show_status(GameData *game)
 {
     printf("\n========== 角色状态 ==========\n");
@@ -1073,7 +1075,7 @@ void travel(GameData *game)
     }
 }
 
-// 战斗
+// 战斗系统
 void battle(GameData *game)
 {
     // 如果恶龙已被击败
@@ -1100,7 +1102,7 @@ void battle(GameData *game)
     case 3: // 城堡 - 恶龙
         enemy_type = 3;
         break;
-    case 4: // 王城
+    case 4: // 王城 - 安全区域
         printf("在王城里很安全，没有敌人。\n");
         return;
     case 5: // 沙漠绿洲 - 沙漠蝎子
@@ -1211,7 +1213,7 @@ void battle(GameData *game)
                 int skill_index = game->learned_skills[i];
                 Skill *skill = &game->skills[skill_index];
 
-                // 检查玩家等级是否满足要求
+                // 检查玩家等级是否满足技能要求
                 if (game->player.level >= skill->required_level)
                 {
                     if (game->player.mp >= skill->mp_cost)
@@ -1250,7 +1252,7 @@ void battle(GameData *game)
                 {
                     game->player.mp -= skill->mp_cost;
 
-                    int base_damage = skill->damage + game->player.attack;  // 技能伤害+玩家攻击力
+                    int base_damage = skill->damage + game->player.attack;  // 技能伤害+玩家攻击
                     int intelligence_bonus = game->player.intelligence / 2; // 智力每2点增加1点技能伤害
                     damage = base_damage + intelligence_bonus;
 
@@ -1326,7 +1328,7 @@ void battle(GameData *game)
             {
                 int enemy_level = estimate_enemy_level(&enemy);
 
-                // 根据玩家等级与敌人等级差计算逃跑率
+                // 根据等级与敌人等级差计算逃跑率
                 int escape_chance = 50 + (game->player.level - enemy_level) * 5;
 
                 escape_chance += (game->player.agility / 10) * 5;
@@ -1355,9 +1357,12 @@ void battle(GameData *game)
 
         if (enemy.hp > 0)
         {
-            int dodge_chance = (game->player.agility / 10) * 5;
+            int enemy_level = estimate_enemy_level(&enemy);
+            int dodge_chance = (game->player.agility / 5 - enemy_level);
             if (dodge_chance > 90)
                 dodge_chance = 90;
+            if (dodge_chance < 0)
+                dodge_chance = 0;
 
             if (rand() % 100 < dodge_chance)
             {
@@ -1558,7 +1563,7 @@ void talk_to_npc(GameData *game)
     {
         int npc_index = npc_indices[choice];
 
-        // 根据恶龙是否被击败显示不同对话
+        // 根据恶龙是否被击败显示不同的对话
         if (game->dragon_defeated &&
             (npc_index == 1 || npc_index == 5 || npc_index == 16 || npc_index == 19))
         {
@@ -1836,7 +1841,6 @@ void use_item(GameData *game)
     }
 }
 
-// 保存
 void save_game(GameData *game)
 {
     FILE *file = fopen("savegame.dat", "wb");
@@ -1872,7 +1876,7 @@ void learn_skills(GameData *game)
     for (int i = 0; i < MAX_SKILLS && i < 19; i++) // 限制在实际定义的范围内
     {
         int learned = 0;
-        // 检查是否已学会
+        // 检查技能是否已学会
         for (int j = 0; j < game->learned_skill_count; j++)
         {
             if (game->learned_skills[j] == i)
@@ -1918,7 +1922,6 @@ void learn_skills(GameData *game)
     if (choice == 0)
         return;
 
-    // 选择是否有效
     if (choice > 0 && choice <= available_skills)
     {
         int skill_index = available_skill_indices[choice - 1];
