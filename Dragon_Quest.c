@@ -23,8 +23,8 @@ typedef struct
     long gold;
     long attack;
     long defense;
-    long agility;      // 敏捷，影响闪避和先攻
-    long intelligence; // 智力，影响魔法攻击和魔法值
+    long agility;      // 敏捷，影响闪避
+    long intelligence; // 智力，影响魔法攻击
 } Player;
 
 typedef struct
@@ -110,7 +110,7 @@ typedef struct
 
 void main_menu(GameData *game);
 
-
+// 函数
 void init_game(GameData *game);
 void init_player(Player *player);
 void init_world(GameData *game);
@@ -183,7 +183,6 @@ int main()
 
     return 0;
 }
-
 
 void init_game(GameData *game)
 {
@@ -433,7 +432,7 @@ void init_world(GameData *game)
     game->items[28].price = 800;
 
     strcpy(game->items[29].name, "狼皮");
-    game->items[29].type = 2; // 任务物品
+    game->items[29].type = 2; // 任务物品,已弃用
     game->items[29].value = 0;
     game->items[29].price = 10;
 
@@ -1074,7 +1073,7 @@ void travel(GameData *game)
 // 战斗
 void battle(GameData *game)
 {
-    // 如果恶龙被击败
+    // 如果恶龙已被击败
     if (game->dragon_defeated && game->current_location == 3)
     {
         printf("恶龙已经被你击败了，龙之城堡现在是一片废墟。\n");
@@ -1098,7 +1097,7 @@ void battle(GameData *game)
     case 3: // 城堡 - 恶龙
         enemy_type = 3;
         break;
-    case 4: // 王城 - 安全区域
+    case 4: // 王城
         printf("在王城里很安全，没有敌人。\n");
         return;
     case 5: // 沙漠绿洲 - 沙漠蝎子
@@ -1209,7 +1208,7 @@ void battle(GameData *game)
                 int skill_index = game->learned_skills[i];
                 Skill *skill = &game->skills[skill_index];
 
-                // 检查玩家等级是否满足技能要求
+                // 检查玩家等级是否满足要求
                 if (game->player.level >= skill->required_level)
                 {
                     if (game->player.mp >= skill->mp_cost)
@@ -1248,8 +1247,8 @@ void battle(GameData *game)
                 {
                     game->player.mp -= skill->mp_cost;
 
-                    int base_damage = skill->damage + game->player.attack;  // 技能伤害+玩家攻击
-                    int intelligence_bonus = game->player.intelligence / 2; // 智力每2点增加1点技能伤害
+                    int base_damage = skill->damage + game->player.attack;  // 技能伤害+玩家攻击力
+                    int intelligence_bonus = game->player.intelligence / 2; // 每2点智力增加1点技能伤害
                     damage = base_damage + intelligence_bonus;
 
                     enemy.hp -= damage;
@@ -1324,7 +1323,7 @@ void battle(GameData *game)
             {
                 int enemy_level = estimate_enemy_level(&enemy);
 
-                // 根据等级与敌人等级差计算逃跑率
+                // 根据玩家等级与敌人等级差计算逃跑成功率
                 int escape_chance = 50 + (game->player.level - enemy_level) * 5;
 
                 escape_chance += (game->player.agility / 10) * 5;
@@ -1556,7 +1555,7 @@ void talk_to_npc(GameData *game)
     {
         int npc_index = npc_indices[choice];
 
-        // 根据恶龙是否被击败显示不同对话
+        // 根据恶龙是否被击败显示不同的对话
         if (game->dragon_defeated &&
             (npc_index == 1 || npc_index == 5 || npc_index == 16 || npc_index == 19))
         {
@@ -1771,7 +1770,7 @@ void use_item(GameData *game)
         {
         case 0: // 武器
             printf("你装备了%s，增加了%d点攻击力！\n", item->name, item->value);
-            // 移除物品
+            // 从背包中移除
             for (int i = choice; i < game->inventory_count - 1; i++)
             {
                 game->inventory[i] = game->inventory[i + 1];
@@ -1780,7 +1779,7 @@ void use_item(GameData *game)
             break;
         case 1: // 防具
             printf("你装备了%s，增加了%d点防御力！\n", item->name, item->value);
-
+            // 从背包中移除
             for (int i = choice; i < game->inventory_count - 1; i++)
             {
                 game->inventory[i] = game->inventory[i + 1];
@@ -1819,7 +1818,7 @@ void use_item(GameData *game)
                 printf("你使用了%s，恢复了%d点生命值！\n", item->name, item->value);
             }
 
-            //移除已使用的消耗品
+            // 移除已使用的消耗品
             for (int i = choice; i < game->inventory_count - 1; i++)
             {
                 game->inventory[i] = game->inventory[i + 1];
@@ -1834,6 +1833,7 @@ void use_item(GameData *game)
     }
 }
 
+// 保存
 void save_game(GameData *game)
 {
     FILE *file = fopen("savegame.dat", "wb");
@@ -1866,7 +1866,8 @@ void learn_skills(GameData *game)
     int available_skills = 0;
     int available_skill_indices[MAX_SKILLS];
 
-    for (int i = 0; i < MAX_SKILLS && i < 19; i++) // 限制在实际定义的范围内
+    // 只检查实际存在的
+    for (int i = 0; i < MAX_SKILLS && i < 19; i++)
     {
         int learned = 0;
         // 检查技能是否已学会
@@ -1879,7 +1880,7 @@ void learn_skills(GameData *game)
             }
         }
 
-        // 检查等级是否满足要求
+        // 检查玩家等级是否满足技能要求
         if (!learned && game->player.level >= game->skills[i].required_level)
         {
             printf("%d. %s (需要等级: %d)",
@@ -1999,5 +2000,3 @@ void cheat_game(GameData *game)
 
     return;
 }
-
-
