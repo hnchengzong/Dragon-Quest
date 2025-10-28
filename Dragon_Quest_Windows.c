@@ -24,8 +24,8 @@ typedef struct
     long gold;
     long attack;
     long defense;
-    long agility;      // 敏捷，影响闪避和先攻
-    long intelligence; // 智力，影响魔法攻击和魔法值
+    long agility;      // 敏捷，影响闪避
+    long intelligence; // 智力，影响魔法攻击
 } Player;
 
 typedef struct
@@ -67,16 +67,16 @@ typedef struct
 } Enemy;
 
 // 任务
-typedef struct
-{
-    int id;
-    char name[MAX_NAME_LENGTH];
-    char description[200];
-    int completed;  // 是否完成 (0=未完成, 1=完成)
-    int reward_exp; // 奖励
-    int reward_gold;
-    int reward_item;
-} Quest;
+// typedef struct
+// {
+//     int id;
+//     char name[MAX_NAME_LENGTH];
+//     char description[200];
+//     int completed;  // 是否完成 (0=未完成, 1=完成)
+//     int reward_exp; // 奖励
+//     int reward_gold;
+//     int reward_item;
+// } Quest;
 
 // NPC
 typedef struct
@@ -101,7 +101,7 @@ typedef struct
     Enemy enemies[MAX_ENEMIES];
     Npc npcs[MAX_NPCS];
     Item items[MAX_INVENTORY];
-    Quest quests[10];
+//    Quest quests[10];
     int dragon_defeated; // 恶龙是否被击败
     int current_location;
     int inventory_count;
@@ -435,7 +435,7 @@ void init_world(GameData *game)
     game->items[28].price = 800;
 
     strcpy(game->items[29].name, "狼皮");
-    game->items[29].type = 2; // 任务物品
+    game->items[29].type = 2; // 任务物品,已弃用
     game->items[29].value = 0;
     game->items[29].price = 10;
 
@@ -944,10 +944,10 @@ void init_world(GameData *game)
     game->dragon_defeated = 0; // 恶龙未被击败
 }
 
-// 估算敌人等级的函数
+// 估算敌人等级
 int estimate_enemy_level(Enemy *enemy)
 {
-    // 基于敌人的属性估算等级
+    // 基于敌人的属性估算
     int level_by_hp = enemy->hp / 30;
     int level_by_attack = enemy->attack / 5;
 
@@ -1024,7 +1024,6 @@ void main_menu(GameData *game)
     }
 }
 
-
 void show_status(GameData *game)
 {
     printf("\n========== 角色状态 ==========\n");
@@ -1100,7 +1099,7 @@ void battle(GameData *game)
     case 3: // 城堡 - 恶龙
         enemy_type = 3;
         break;
-    case 4: // 王城 - 安全区域
+    case 4: // 王城
         printf("在王城里很安全，没有敌人。\n");
         return;
     case 5: // 沙漠绿洲 - 沙漠蝎子
@@ -1211,7 +1210,7 @@ void battle(GameData *game)
                 int skill_index = game->learned_skills[i];
                 Skill *skill = &game->skills[skill_index];
 
-                // 检查玩家等级是否满足技能要求
+                // 检查玩家等级是否满足要求
                 if (game->player.level >= skill->required_level)
                 {
                     if (game->player.mp >= skill->mp_cost)
@@ -1558,7 +1557,7 @@ void talk_to_npc(GameData *game)
     {
         int npc_index = npc_indices[choice];
 
-        // 根据恶龙是否被击败显示不同的对话
+        // 根据恶龙是否被击败显示不同对话
         if (game->dragon_defeated &&
             (npc_index == 1 || npc_index == 5 || npc_index == 16 || npc_index == 19))
         {
@@ -1869,7 +1868,6 @@ void learn_skills(GameData *game)
     int available_skills = 0;
     int available_skill_indices[MAX_SKILLS];
 
-
     for (int i = 0; i < MAX_SKILLS && i < 19; i++) // 限制在实际定义的范围内
     {
         int learned = 0;
@@ -2004,4 +2002,3 @@ void cheat_game(GameData *game)
 
     return;
 }
-
