@@ -1,3 +1,4 @@
+//由于git一直连接不上github所以只能手动提交c文件了。
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -2000,3 +2001,4 @@ void cheat_game(GameData *game)
 
     return;
 }
+
